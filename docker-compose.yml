@@ -2,16 +2,18 @@ version: '3'
 
 services:
   cliente-service:
-    build: ./micro_Cliente
+    build: .
     ports:
-      - "8080:8080"
+      - "8085:8085"
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://cliente-db:5432/cliente-db
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: gustavo10
     depends_on:
       - cliente-db
-
+    networks:
+      - services-app
+    restart: on-failure
 
   cliente-db:
     image: postgres:15.4
@@ -21,31 +23,11 @@ services:
       POSTGRES_DB: cliente-db
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: gustavo10
-      volumes:
-        -cliente-db-data:/var/lib/postgresql/data
+    volumes:
+      - C:\Users\Darwoft\Escritorio\ClientsDB:/var/lib/postgresql/data
+    networks:
+      - services-app
 
-  usuario-service:
-    build: ./micro_Usuarios
-    ports:
-      - "8081:8081"
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://usuario-db:5432/usuario-db
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: gustavo10
-    depends_on:
-      - usuario-db
-
-  usuario-db:
-    image: postgres:15.4
-    ports:
-      - "5433:5433"
-    environment:
-      POSTGRES_DB: usuario-db
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: gustavo10
-      volumes:
-        -usuario-db-data:/var/lib/postgresql/data
-
-volumes:
-  cliente-db-data:
-  usuario-db-data:
+networks:
+  services-app:
+    driver: bridge
